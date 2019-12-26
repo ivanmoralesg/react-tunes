@@ -1,39 +1,57 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import './style.css'
 
 class TuneList extends React.Component {
   state = {
     tunes: [
-      { id: 1, author: 'Jay Z', title: 'Young Forever' },
-      { id: 2, author: 'Alphaville', title: 'Forever Young' }
+      { id: 1, artist: 'Jay Z', title: 'Young Forever' },
+      { id: 2, artist: 'Alphaville', title: 'Forever Young' }
     ]
   }
 
-  removeTune = (id) => {
+  addTune = (title, artist) => {
+    let tune = {
+      id: this.state.tunes.length + 1,
+      artist: artist,
+      title: title
+    };
     this.setState((state) => ({
-      tunes: this.state.tunes.filter(tune => {
-        return tune.id != id;
-      })
-    }))
+      tunes: this.state.tunes.concat([tune])
+    }));
+
+  }
+
+  removeTune = (id) => {
+    if (confirm("Are you sure you want to remove this?")) {
+      this.setState((state) => ({
+        tunes: this.state.tunes.filter(tune => {
+          return tune.id != id;
+        })
+      }))
+    }
   }
 
   render() {
     return (
       <div>
-      {this.state.tunes.length} tune{this.state.tunes.length != 1 ? 's' : ''}
-      <NewTuneForm/>
-      <ul>
-      {
-        this.state.tunes.map(tune => {
-          return (
-            <li key={tune.id}>
-            <Tune title={tune.title} author={tune.author}/>
-            <RemoveButton id={tune.id} onClick={this.removeTune}/>
-            </li>
-          )
-        })
-      }
-      </ul>
+      There are a total of {this.state.tunes.length} tune{this.state.tunes.length != 1 ? 's' : ''}.
+      <table className="table">
+        <thead>
+          <tr><th>Tune</th><th>Artist</th><th></th></tr>
+        </thead>
+        <tbody>
+        {
+          this.state.tunes.map(tune => {
+            return (
+              <Tune key={tune.id} id={tune.id} title={tune.title} artist={tune.artist} handleRemove={this.removeTune}/>
+            )
+          })
+        }
+        </tbody>
+      </table>
+      <h2>Add Tune</h2>
+      <AddTuneForm onSubmit={this.addTune} />
       </div>
     )
   }
@@ -41,7 +59,7 @@ class TuneList extends React.Component {
 
 class RemoveButton extends React.Component {
   handleClick = () => {
-    this.props.onClick(this.props.id);
+    this.props.handleRemove(this.props.id);
   }
 
   render() {
@@ -54,26 +72,28 @@ class RemoveButton extends React.Component {
 class Tune extends React.Component {
   render () {
     return (
-      <span className="tune">
-      {this.props.title} by {this.props.author}
-      </span>
+      <tr>
+        <td>{this.props.title}</td>
+        <td>{this.props.artist}</td>
+        <td><RemoveButton id={this.props.id} handleRemove={this.props.handleRemove} /></td>
+      </tr>
     )
   }
 }
 
-class NewTuneForm extends React.Component {
-  state = {
-    title: ''
-  }
+class AddTuneForm extends React.Component {
 
-  handleChange = (event) => {
-    this.setState({ title: event.target.value });
+  handleSubmit = (event) => {
+    event.preventDefault()
+    let text = event.target.text.value;
+    let titleArtistPair = text.split(' by ');
+    this.props.onSubmit(titleArtistPair[0], titleArtistPair[1])
   }
 
   render() {
     return (
-      <form>
-        <input type="text" placeholder="Song by Artist" name="title" onChange={this.handleChange}/>
+      <form onSubmit={this.handleSubmit}>
+        <input type="text" placeholder="Song by Artist" name="text" />
         <input type="submit" value="Add" />
       </form>
     )
