@@ -13,13 +13,12 @@ class TuneList extends React.Component {
   addTune = (title, artist) => {
     let tune = {
       id: this.state.tunes.length + 1,
-      artist: artist,
-      title: title
+      artist,
+      title
     };
     this.setState((state) => ({
       tunes: this.state.tunes.concat([tune])
     }));
-
   }
 
   removeTune = (id) => {
@@ -57,53 +56,44 @@ class TuneList extends React.Component {
   }
 }
 
-class RemoveButton extends React.Component {
-  handleClick = () => {
-    this.props.handleRemove(this.props.id);
+const RemoveButton = ({id, handleRemove}) => {
+  const handleClick = () => {
+    handleRemove(id);
   }
 
-  render() {
-    return (
-      <button onClick={this.handleClick} id={0}>Remove</button>
-    )
-  }
+  return (
+    <button onClick={handleClick} id={0}>Remove</button>
+  )
 }
 
-class Tune extends React.Component {
-  render () {
-    return (
-      <tr>
-        <td>{this.props.title}</td>
-        <td>{this.props.artist}</td>
-        <td><RemoveButton id={this.props.id} handleRemove={this.props.handleRemove} /></td>
-      </tr>
-    )
-  }
+const Tune = ({id, title, artist, handleRemove}) => {
+  return (
+    <tr>
+      <td>{title}</td>
+      <td>{artist}</td>
+      <td><RemoveButton id={id} handleRemove={handleRemove} /></td>
+    </tr>
+  )
 }
 
-class AddTuneForm extends React.Component {
-
-  handleSubmit = (event) => {
+const AddTuneForm = ({onSubmit}) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
     let text = event.target.text.value;
     let titleArtistPair = text.split(' by ');
-    this.props.onSubmit(titleArtistPair[0], titleArtistPair[1])
+    onSubmit(titleArtistPair[0], titleArtistPair[1])
   }
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <input type="text" placeholder="Song by Artist" name="text" />
-        <input type="submit" value="Add" />
-      </form>
-    )
-  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="text" placeholder="Song by Artist" name="text" />
+      <input type="submit" value="Add" />
+    </form>
+  )
 }
 
-function App(props) {
-    return (
-      <TuneList/>
-    )
+const App = () => {
+  <TuneList/>
 }
 
 ReactDOM.render(<App/>, document.getElementById('app-root'));
