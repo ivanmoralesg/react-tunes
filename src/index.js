@@ -1,59 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import './style.css'
 
-class TuneList extends React.Component {
-  state = {
-    tunes: [
+const TuneList = () => {
+  const [tunes, setTunes] = useState(
+    [
       { id: 1, artist: 'Jay Z', title: 'Young Forever' },
       { id: 2, artist: 'Alphaville', title: 'Forever Young' }
     ]
-  }
+  );
 
-  addTune = (title, artist) => {
+  const addTune = (title, artist) => {
     let tune = {
-      id: this.state.tunes.length + 1,
+      id: tunes.length + 1,
       artist,
       title
     };
-    this.setState((state) => ({
-      tunes: this.state.tunes.concat([tune])
-    }));
+    setTunes(tunes.concat([tune]));
   }
 
-  removeTune = (id) => {
+  const removeTune = (id) => {
     if (confirm("Are you sure you want to remove this?")) {
-      this.setState((state) => ({
-        tunes: this.state.tunes.filter(tune => {
-          return tune.id != id;
-        })
-      }))
+      setTunes(tunes.filter(tune => {
+        return tune.id != id;
+      }));
     }
   }
 
-  render() {
-    return (
-      <div>
-      There are a total of {this.state.tunes.length} tune{this.state.tunes.length != 1 ? 's' : ''}.
-      <table className="table">
-        <thead>
-          <tr><th>Tune</th><th>Artist</th><th></th></tr>
-        </thead>
-        <tbody>
-        {
-          this.state.tunes.map(tune => {
-            return (
-              <Tune key={tune.id} id={tune.id} title={tune.title} artist={tune.artist} handleRemove={this.removeTune}/>
-            )
-          })
-        }
-        </tbody>
-      </table>
-      <h2>Add Tune</h2>
-      <AddTuneForm onSubmit={this.addTune} />
-      </div>
-    )
-  }
+  return (
+    <div>
+    There are a total of {tunes.length} tune{tunes.length != 1 ? 's' : ''}.
+    <table className="table">
+      <thead>
+        <tr><th>Tune</th><th>Artist</th><th></th></tr>
+      </thead>
+      <tbody>
+      {
+        tunes.map(tune => {
+          return (
+            <Tune key={tune.id} id={tune.id} title={tune.title} artist={tune.artist} handleRemove={removeTune}/>
+          )
+        })
+      }
+      </tbody>
+    </table>
+    <h2>Add Tune</h2>
+    <AddTuneForm onSubmit={addTune} />
+    </div>
+  )
 }
 
 const RemoveButton = ({id, handleRemove}) => {
@@ -93,7 +87,9 @@ const AddTuneForm = ({onSubmit}) => {
 }
 
 const App = () => {
-  <TuneList/>
+  return (  
+    <TuneList/> 
+  )
 }
 
 ReactDOM.render(<App/>, document.getElementById('app-root'));
